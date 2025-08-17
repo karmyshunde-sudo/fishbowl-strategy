@@ -1,0 +1,132 @@
+name: 鱼盆模型ETF量化策略调度
+
+on:
+  schedule:
+    # 每周五16:00更新股票池（UTC 8:00）
+    - cron: '0 8 * * 5'
+    # 每日11:00推送股票池（UTC 3:00）
+    - cron: '0 3 * * 1-5'
+    # 交易日13:30执行策略检查（UTC 5:30）
+    - cron: '30 5 * * 1-5'
+    # 上午交易时段套利检查（9:30/10:00/10:30/11:00/11:30）
+    - cron: '30 1 * * 1-5'  # 9:30
+    - cron: '0 2 * * 1-5'   # 10:00
+    - cron: '30 2 * * 1-5'  # 10:30
+    - cron: '0 3 * * 1-5'   # 11:00
+    - cron: '30 3 * * 1-5'  # 11:30
+    # 下午交易时段套利检查（13:00/13:30/14:00/14:30/15:00）
+    - cron: '0 5 * * 1-5'   # 13:00
+    - cron: '30 5 * * 1-5'  # 13:30（与策略检查重合，会自动跳过）
+    - cron: '0 6 * * 1-5'   # 14:00
+    - cron: '30 6 * * 1-5'  # 14:30
+    - cron: '0 7 * * 1-5'   # 15:00
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  check_trading_day:
+    runs-on: ubuntu-latest
+    outputs:
+      is_trading_day: ${{ steps.check.outputs.is_trading_day }}
+    steps:
+      - name: 检查是否为交易日
+        id: check
+        run: |
+          # 判断今天是否为周一至周五（排除周末）
+          weekday=$(date +%u)
+          if [ $weekday -ge 1 ] && [ $weekday -le 5 ]; then
+            echo "is_trading_day=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_trading_day=false" >> $GITHUB_OUTPUT
+          fi
+
+  update_stock_pool:
+    needs: check_trading_day
+    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '0 8 * * 5'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 执行股票池更新
+        env:
+          TUSHARE_API_KEY: ${{ secrets.TUSHARE_API_KEY }}
+        run: python main.py --task update_stock_pool
+      
+      - name: 提交更新的股票池文件
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto update stock pool"
+          file_pattern: "data/stock_pool/*.json"
+
+  push_stock_pool:
+    needs: [check_trading_day, update_stock_pool]
+    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '0 3 * * 1-5'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 推送股票池消息
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+        run: python main.py --task push_stock_pool
+
+  execute_strategy:
+    needs: check_trading_day
+    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '30 5 * * 1-5'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 执行策略检查
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+          TUSHARE_API_KEY: ${{ secrets.TUSHARE_API_KEY }}
+        run: python main.py --task execute_strategy
+
+  check_arbitrage:
+    needs: check_trading_day
+    if: needs.check_trading_day.outputs.is_trading_day == 'true' && contains(github.event.schedule, '30 1') || contains(github.event.schedule, '0 2') || contains(github.event.schedule, '30 2') || contains(github.event.schedule, '0 3') || contains(github.event.schedule, '30 3') || contains(github.event.schedule, '0 5') || contains(github.event.schedule, '0 6') || contains(github.event.schedule, '30 6') || contains(github.event.schedule, '0 7')
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 执行套利检查
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+          TUSHARE_API_KEY: ${{ secrets.TUSHARE_API_KEY }}
+        run: python main.py --task check_arbitrage
