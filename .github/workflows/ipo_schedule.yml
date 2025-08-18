@@ -12,36 +12,15 @@ jobs:
     outputs:
       is_trading_day: ${{ steps.check.outputs.is_trading_day }}
     steps:
-      - name: 检查是否为交易日（北京时间）
+      - name: 检查是否为交易日
         id: check
         run: |
-          # 转换为北京时间（UTC+8）
-          today=$(date -d "UTC+8" +%Y-%m-%d)
-          weekday=$(date -d "UTC+8" +%u)  # 1=周一, 5=周五, 6=周六, 7=周日
-          echo "当前北京时间: $today (周$weekday)"
-          
-          # 判断是否为周末
-          if [ $weekday -ge 6 ]; then
-            echo "is_trading_day=false" >> $GITHUB_OUTPUT
-            echo "今天是周末，非交易日"
-            exit 0
-          fi
-          
-          # 节假日列表（格式：YYYY-MM-DD）
-          holidays=(
-            "2025-01-01" "2025-01-02" "2025-01-03"  # 元旦
-            "2025-04-04" "2025-04-05"              # 清明
-            "2025-05-01" "2025-05-02" "2025-05-03"  # 劳动节
-            "2025-10-01" "2025-10-02" "2025-10-03" "2025-10-04" "2025-10-05"  # 国庆
-          )
-          
-          # 检查当前日期是否为节假日
-          if [[ " ${holidays[@]} " =~ " $today " ]]; then
-            echo "is_trading_day=false" >> $GITHUB_OUTPUT
-            echo "今天是节假日，非交易日"
-          else
+          # 判断今天是否为周一至周五
+          weekday=$(date +%u)
+          if [ $weekday -ge 1 ] && [ $weekday -le 5 ]; then
             echo "is_trading_day=true" >> $GITHUB_OUTPUT
-            echo "今天是交易日"
+          else
+            echo "is_trading_day=false" >> $GITHUB_OUTPUT
           fi
 
   fetch_and_push_ipo:
