@@ -1,0 +1,51 @@
+name: 新股申购信息推送
+
+on:
+  schedule:
+    # 每个交易日早上10点执行（UTC时间2点，周一至周五）
+    - cron: '0 2 * * 1-5'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  check_trading_day:
+    runs-on: ubuntu-latest
+    outputs:
+      is_trading_day: ${{ steps.check.outputs.is_trading_day }}
+    steps:
+      - name: 检查是否为交易日
+        id: check
+        run: |
+          # 判断今天是否为周一至周五
+          weekday=$(date +%u)
+          if [ $weekday -ge 1 ] && [ $weekday -le 5 ]; then
+            echo "is_trading_day=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_trading_day=false" >> $GITHUB_OUTPUT
+          fi
+
+  fetch_and_push_ipo:
+    needs: check_trading_day
+    if: needs.check_trading_day.outputs.is_trading_day == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 执行新股信息爬取与推送
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+        run: python main_ipo.py
+      
+      - name: 上传日志
+        uses: actions/upload-artifact@v3
+        with:
+          name: ipo-logs
+          path: logs/
