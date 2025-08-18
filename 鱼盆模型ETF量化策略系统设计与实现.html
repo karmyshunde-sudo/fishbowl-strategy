@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>封面页 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-center items-center w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 背景装饰：抽象数据网格 -->
+<div class="absolute inset-0 z-0 opacity-20" style="background-image:
+            linear-gradient(rgba(38, 48, 165, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(38, 48, 165, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;">
+</div>
+<!-- 左侧蓝色装饰条 -->
+<div class="absolute left-0 top-0 h-full w-2 bg-[#2630a5]"></div>
+<div class="absolute left-2 top-0 h-full w-1 bg-[#202889]"></div>
+<!-- 右上角装饰图形 -->
+<div class="absolute top-0 right-0 w-64 h-64 pointer-events-none">
+<svg fill="none" height="100%" viewbox="0 0 256 256" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 0H128C128 53.02 85.02 96 32 96V256H256V0Z" fill="#2630a5" fill-opacity="0.05"></path>
+<path d="M256 0H192C192 35.35 167.35 64 132 64V128C167.35 128 192 156.65 192 192H256V0Z" fill="#2630a5" fill-opacity="0.1"></path>
+</svg>
+</div>
+<!-- 主要内容容器 -->
+<main class="relative z-10 flex flex-col items-center justify-center text-center w-full px-20">
+<div class="bg-[#2630a5] text-white p-8 rounded-lg shadow-xl transform -rotate-1">
+<h1 class="text-5xl font-black tracking-wider leading-tight">
+                    鱼盆模型ETF量化策略系统
+                </h1>
+<h2 class="text-4xl font-bold mt-2 opacity-90">
+                    设计与实现
+                </h2>
+</div>
+<div class="mt-12 text-3xl text-[#333333] font-semibold">
+<p>技术团队内部汇报</p>
+</div>
+<div class="mt-16 text-2xl text-[#444444]">
+<p>汇报日期：2025年8月</p>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="absolute bottom-0 left-0 w-full h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold z-20">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>目录 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+        .toc-list {
+            counter-reset: toc-counter;
+        }
+        .toc-list li::before {
+            counter-increment: toc-counter;
+            content: counter(toc-counter);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 30%, #5059bf, #2630a5);
+            color: #FFFFFF;
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 24px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">目录</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex items-center justify-center min-h-0 text-[#333333]">
+<div class="w-full px-[80px]">
+<ul class="toc-list columns-2 gap-x-[80px] text-[28px] text-[#2630a5] leading-[2.2]">
+<li class="flex items-center break-inside-avoid mb-6">项目概述</li>
+<li class="flex items-center break-inside-avoid mb-6">需求分析</li>
+<li class="flex items-center break-inside-avoid mb-6">系统设计</li>
+<li class="flex items-center break-inside-avoid mb-6">策略实现</li>
+<li class="flex items-center break-inside-avoid mb-6">数据流程</li>
+<li class="flex items-center break-inside-avoid mb-6">项目计划与风险分析</li>
+<li class="flex items-center break-inside-avoid mb-6">总结与展望</li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>项目背景与目标 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">1.1 项目背景与目标</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<ul class="list-disc list-inside space-y-10 text-[26px]" style="line-height: 2.0;">
+<li><strong class="font-bold text-[#2630a5]">背景</strong>：将"招财大牛猫"鱼盆模型ETF投资策略转化为量化交易系统</li>
+<li><strong class="font-bold text-[#2630a5]">目标</strong>：实现策略自动化计算与微信消息推送投资建议</li>
+<li><strong class="font-bold text-[#2630a5]">定位</strong>：后端量化策略计算与结果通知系统，<strong class="text-red-600">不涉及实际交易执行</strong></li>
+<li><strong class="font-bold text-[#2630a5]">边界</strong>：输入为ETF基础数据/行情数据/市场指标，输出为投资建议/组合配置/风险提示</li>
+</ul>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>策略核心思想 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">1.2 策略来源与核心思想</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-[26px] leading-[2.0] space-y-8">
+<ul class="list-disc list-inside space-y-6 pl-4">
+<li>
+<strong class="text-[#2630a5]">核心思想</strong>："截断亏损，让利润奔跑"，基于20日均线判断市场趋势
+                    </li>
+<li>
+<strong class="text-[#2630a5]">策略特点</strong>：移动平均线趋势跟踪、严格纪律性操作、风险控制优先、结合行业景气度
+                    </li>
+<li>
+<strong class="text-[#2630a5]">优势</strong>：系统化决策避免主观情绪干扰，适配ETF市场特性
+                    </li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>功能需求分析 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">2.1 功能需求</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<ul class="list-disc list-inside space-y-6 text-2xl leading-relaxed">
+<li>
+<strong class="text-[#2630a5]">数据采集与处理</strong>：实时采集ETF基础信息/行情数据/行业指标，数据清洗与标准化
+                </li>
+<li>
+<strong class="text-[#2630a5]">ETF挑选</strong>：流动性筛选(日均成交额≥1亿)、规模过滤(≥5亿)、跟踪误差过滤(≤2%)、行业景气度评估
+                </li>
+<li>
+<strong class="text-[#2630a5]">策略计算</strong>：鱼盆模型信号生成、趋势确认(2-3天验证)、仓位计算、风险控制
+                </li>
+<li>
+<strong class="text-[#2630a5]">套利策略</strong>：事件驱动型套利检测、网格交易区间设置、风险评估
+                </li>
+<li>
+<strong class="text-[#2630a5]">结果通知</strong>：投资建议格式化、微信消息推送、消息状态跟踪
+                </li>
+</ul>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>非功能与接口需求 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">2.2 非功能与接口需求</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<ul class="list-disc list-inside space-y-8 text-2xl leading-relaxed">
+<li><strong class="text-[#2630a5]">性能要求</strong>：每日数据更新≤30分钟，策略计算≤5分钟</li>
+<li><strong class="text-[#2630a5]">可靠性要求</strong>：系统可用性≥99.9%，数据准确率≥99.99%</li>
+<li><strong class="text-[#2630a5]">安全性要求</strong>：数据传输加密，敏感配置加密存储</li>
+<li><strong class="text-[#2630a5]">可扩展性要求</strong>：支持新增策略模块与数据源扩展</li>
+<li><strong class="text-[#2630a5]">接口需求</strong>：数据源接口(行情API等)、内部接口(数据交换协议)、外部接口(微信消息API)</li>
+</ul>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>系统整体架构 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">3.1 整体架构</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="flex flex-col items-center">
+<p class="text-2xl leading-relaxed text-center max-w-4xl mb-10">
+                    采用分层架构设计，各层职责清晰，便于模块独立开发与维护，支持横向扩展。
+                </p>
+<!-- 分层架构图 -->
+<div class="w-full flex flex-col items-center justify-center gap-2">
+<!-- 接入层 -->
+<div class="bg-[#2630a5] text-white rounded-lg shadow-md w-auto">
+<div class="px-10 py-3 text-2xl font-bold">接入层</div>
+<div class="px-10 pb-3 text-lg opacity-90">任务调度、外部请求处理</div>
+</div>
+<!-- 箭头 -->
+<svg class="text-[#2630a5]" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M19 12L12 5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<!-- 数据层 -->
+<div class="bg-[#2630a5] text-white rounded-lg shadow-md w-auto">
+<div class="px-10 py-3 text-2xl font-bold">数据层</div>
+<div class="px-10 pb-3 text-lg opacity-90">数据采集、存储、预处理</div>
+</div>
+<!-- 箭头 -->
+<svg class="text-[#2630a5]" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M19 12L12 5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<!-- 策略层 -->
+<div class="bg-[#2630a5] text-white rounded-lg shadow-md w-auto">
+<div class="px-10 py-3 text-2xl font-bold">策略层</div>
+<div class="px-10 pb-3 text-lg opacity-90">核心策略算法实现</div>
+</div>
+<!-- 箭头 -->
+<svg class="text-[#2630a5]" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M19 12L12 5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<!-- 风控层 -->
+<div class="bg-[#2630a5] text-white rounded-lg shadow-md w-auto">
+<div class="px-10 py-3 text-2xl font-bold">风控层</div>
+<div class="px-10 pb-3 text-lg opacity-90">风险控制与合规检查</div>
+</div>
+<!-- 箭头 -->
+<svg class="text-[#2630a5]" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5V19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M19 12L12 5L5 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<!-- 通知层 -->
+<div class="bg-[#2630a5] text-white rounded-lg shadow-md w-auto">
+<div class="px-10 py-3 text-2xl font-bold">通知层</div>
+<div class="px-10 pb-3 text-lg opacity-90">结果格式化与消息发送</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>核心模块设计 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">3.2 核心模块详细设计</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-6">
+<ul class="list-disc list-inside space-y-4 pl-4">
+<li><strong class="text-[#2630a5]">数据模块</strong>：采集(定时任务)、存储(关系型+时序数据库)、预处理(清洗/标准化)</li>
+<li><strong class="text-[#2630a5]">ETF挑选模块</strong>：流动性筛选器→规模过滤器→跟踪误差计算器→行业评估器</li>
+<li><strong class="text-[#2630a5]">策略模块</strong>：趋势跟踪(20日均线计算)、信号生成(买卖信号确认)、仓位管理(加仓/减仓算法)、组合管理(核心-卫星配置)</li>
+<li><strong class="text-[#2630a5]">套利模块</strong>：事件监控、网格交易、风险评估</li>
+<li><strong class="text-[#2630a5]">通知模块</strong>：模板管理、内容格式化、微信客户端</li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>数据模型与技术选型 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">3.3 数据模型与技术选型</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="space-y-8">
+<div class="text-[22px] leading-[1.8] text-[#444444]">
+<p><strong class="text-[#2630a5]">核心数据实体</strong>：ETF基础信息表、行情数据表、指标计算结果表、策略信号表、投资组合表、交易记录表。</p>
+<p class="mt-4"><strong class="text-[#2630a5]">关键数据结构</strong>：ETF基础信息(代码/规模/成交额/跟踪误差)、交易信号(类型/置信度/建议仓位/价格水平)。</p>
+</div>
+<div class="w-full">
+<table class="w-full border-collapse text-center">
+<thead>
+<tr class="bg-[#2630a5] text-white">
+<th class="p-3 text-xl font-bold w-1/4">技术领域</th>
+<th class="p-3 text-xl font-bold w-1/4">选型</th>
+<th class="p-3 text-xl font-bold w-1/2">选型理由</th>
+</tr>
+</thead>
+<tbody class="text-[20px]">
+<tr class="bg-white">
+<td class="p-3 border border-gray-200">开发语言</td>
+<td class="p-3 border border-gray-200 font-semibold">Python</td>
+<td class="p-3 border border-gray-200 text-left leading-relaxed">丰富的金融计算库，量化生态完善</td>
+</tr>
+<tr class="bg-[#F9FAFB]">
+<td class="p-3 border border-gray-200">关系型数据库</td>
+<td class="p-3 border border-gray-200 font-semibold">PostgreSQL</td>
+<td class="p-3 border border-gray-200 text-left leading-relaxed">强大的SQL支持，JSON数据类型友好</td>
+</tr>
+<tr class="bg-white">
+<td class="p-3 border border-gray-200">时序数据库</td>
+<td class="p-3 border border-gray-200 font-semibold">InfluxDB</td>
+<td class="p-3 border border-gray-200 text-left leading-relaxed">高效存储和查询时间序列数据</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>鱼盆模型算法实现 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<script async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">4.1 鱼盆模型算法</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-8">
+<ul class="list-disc list-inside space-y-6 pl-4">
+<li>
+<strong class="text-[#2630a5]">趋势判断</strong>：计算20日均线(MA20)。买入信号：价格上穿MA20且MA20呈上升趋势(2-3天确认)。卖出信号：价格下穿MA20或MA20由升转降。
+          </li>
+<li>
+<strong class="text-[#2630a5]">仓位管理</strong>：正金字塔加仓(30%→20%→10%)，倒金字塔减仓(10%→20%→30%)。
+          </li>
+<li>
+<strong class="text-[#2630a5]">止损策略</strong>：固定比例止损(15%)，跟踪止损(随价格上涨上调止损位)。
+          </li>
+</ul>
+<div class="text-center pt-8">
+<p class="text-3xl font-serif text-[#202889]">
+            \[MA20 = \frac{P_1 + P_2 + ... + P_{20}}{20}\]
+          </p>
+</div>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>ETF挑选与组合管理 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">4.2 &amp; 4.3 ETF挑选与组合管理</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-8">
+<ul class="list-disc list-inside space-y-6 pl-4">
+<li>
+<strong class="text-[#2630a5]">ETF挑选流程</strong>：获取ETF列表→流动性筛选→规模筛选→跟踪误差计算→行业景气度评估→输出合格列表
+                    </li>
+<li>
+<strong class="text-[#2630a5]">组合管理策略</strong>：核心资产(60-80%，宽基ETF) + 卫星资产(20-40%，行业/主题ETF)
+                    </li>
+<li>
+<strong class="text-[#2630a5]">再平衡机制</strong>：季度定期再平衡 + 触发式再平衡(偏离20%) + 系统性风险触发再平衡
+                    </li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>数据流程设计 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">5.1 &amp; 5.2 数据流程</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="flex flex-col gap-10">
+<!-- 数据采集与预处理流程 -->
+<div class="flex flex-col items-center">
+<h2 class="text-3xl font-bold text-[#2630a5] mb-6">数据采集与预处理</h2>
+<div class="flex items-center justify-center w-full gap-4">
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-database text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">数据源</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-plug text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">数据接入</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-filter-circle-xmark text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">数据清洗</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-save text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">数据存储</span>
+</div>
+</div>
+</div>
+<!-- 策略计算流程 -->
+<div class="flex flex-col items-center">
+<h2 class="text-3xl font-bold text-[#2630a5] mb-6">策略计算</h2>
+<div class="flex items-center justify-center w-full flex-wrap gap-x-4 gap-y-6">
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-table-list text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">基础数据</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-magnifying-glass-chart text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">ETF挑选</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-bullseye text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">信号生成</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-shield-halved text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">风控校验</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-sitemap text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">组合优化</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fas fa-file-invoice text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">结果格式化</span>
+</div>
+<i class="fas fa-arrow-right-long text-3xl text-[#2630a5]"></i>
+<div class="flex flex-col items-center justify-center text-center bg-[#F9FAFB] border border-gray-200 rounded-lg p-4 w-40 h-24 shadow-sm">
+<i class="fab fa-weixin text-3xl text-[#2630a5] mb-2"></i>
+<span class="text-xl font-semibold">微信通知</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>项目计划与里程碑 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">7.1 &amp; 7.2 项目计划与里程碑</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-10">
+<ul class="list-disc list-inside space-y-4 pl-4">
+<li>
+<strong class="text-[#2630a5]">开发阶段划分</strong>：需求分析与设计(4周) → 核心功能开发(8周) → 集成测试(4周) → 部署上线(2周)
+                    </li>
+<li>
+<strong class="text-[#2630a5]">关键里程碑</strong>：M1(需求分析完成，第4周末)、M2(系统设计评审通过，第6周末)、M3(核心模块开发完成，第12周末)、M4(系统测试通过，第16周末)、M5(系统上线，第18周末)
+                    </li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>风险分析与应对 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">8.1 风险分析</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-8">
+<ul class="list-disc list-inside space-y-6 pl-4">
+<li>
+<strong class="text-[#2630a5]">技术风险</strong>：数据质量风险(多源比对、监控告警)、计算性能风险(算法优化、分布式处理)
+                    </li>
+<li>
+<strong class="text-[#2630a5]">业务风险</strong>：策略失效风险(参数自适应、多策略融合)、监管政策风险(政策跟踪、灵活调整)
+                    </li>
+<li>
+<strong class="text-[#2630a5]">运维风险</strong>：系统可用性风险(组件冗余、故障转移、备份恢复)
+                    </li>
+</ul>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
+
+<!-- SLIDE SPLIT -->
+
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, initial-scale=1.0" name="viewport"/>
+<title>总结与展望 - 鱼盆模型ETF量化策略系统设计与实现</title>
+<script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+<link href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link crossorigin="" href="https://lf-code-agent.coze.cn" rel="preconnect"/>
+<link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+<style>
+        .font-sans-sc { font-family: 'Noto Sans SC', 'SimSun', '宋体', serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-[#eef2f9] font-sans-sc">
+<div class="slide-container relative flex flex-col justify-start items-stretch w-[1280px] h-[720px] max-w-[1280px] max-h-[720px] aspect-[16/9] overflow-hidden bg-white shadow-2xl">
+<!-- 页眉 -->
+<header class="flex-shrink-0 h-[100px] bg-[#2630a5] text-white flex items-center px-[48px]">
+<h1 class="text-4xl font-bold">9.1 总结与展望</h1>
+</header>
+<!-- 主内容区 -->
+<main class="flex-grow flex flex-col justify-center min-h-0 p-[40px_64px] text-[#333333]">
+<div class="text-2xl leading-loose space-y-10">
+<ul class="list-disc list-inside space-y-6 pl-4">
+<li>
+<strong class="text-[#2630a5]">项目总结：</strong>实现鱼盆模型ETF策略的量化与自动化，构建分层架构的量化策略系统，建立完善的数据处理与策略计算流程。
+                    </li>
+<li>
+<strong class="text-[#2630a5]">扩展建议：</strong>功能扩展(多策略、回测、Web界面)、性能优化(流计算、存储优化)、业务扩展(多资产、多市场、AI辅助)。
+                    </li>
+</ul>
+<div class="text-center pt-16">
+<p class="text-3xl font-bold text-[#2630a5]">
+                        致谢：感谢团队成员的支持与协作
+                    </p>
+</div>
+</div>
+</main>
+<!-- 页脚 -->
+<footer class="flex-shrink-0 h-[48px] bg-[#2630a5] text-white flex items-center justify-between px-12 text-lg font-semibold">
+<span>技术团队</span>
+<span>鱼盆模型ETF量化策略系统设计与实现</span>
+<span>2025-08-17</span>
+</footer>
+</div>
+</body>
+</html>
