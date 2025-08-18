@@ -40,20 +40,42 @@ jobs:
     outputs:
       is_trading_day: ${{ steps.check.outputs.is_trading_day }}
     steps:
-      - name: 检查是否为交易日
+      - name: 检查是否为交易日（北京时间）
         id: check
         run: |
-          # 判断今天是否为周一至周五（排除周末）
-          weekday=$(date +%u)
-          if [ $weekday -ge 1 ] && [ $weekday -le 5 ]; then
-            echo "is_trading_day=true" >> $GITHUB_OUTPUT
-          else
+          # 转换为北京时间（UTC+8）
+          today=$(date -d "UTC+8" +%Y-%m-%d)
+          weekday=$(date -d "UTC+8" +%u)  # 1=周一, 5=周五, 6=周六, 7=周日
+          echo "当前北京时间: $today (周$weekday)"
+          
+          # 判断是否为周末
+          if [ $weekday -ge 6 ]; then
             echo "is_trading_day=false" >> $GITHUB_OUTPUT
+            echo "今天是周末，非交易日"
+            exit 0
+          fi
+          
+          # 节假日列表（格式：YYYY-MM-DD）
+          holidays=(
+            "2025-01-01" "2025-01-02" "2025-01-03"  # 元旦
+            "2025-04-04" "2025-04-05"              # 清明
+            "2025-05-01" "2025-05-02" "2025-05-03"  # 劳动节
+            "2025-10-01" "2025-10-02" "2025-10-03" "2025-10-04" "2025-10-05"  # 国庆
+          )
+          
+          # 检查当前日期是否为节假日
+          if [[ " ${holidays[@]} " =~ " $today " ]]; then
+            echo "is_trading_day=false" >> $GITHUB_OUTPUT
+            echo "今天是节假日，非交易日"
+          else
+            echo "is_trading_day=true" >> $GITHUB_OUTPUT
+            echo "今天是交易日"
           fi
 
   update_stock_pool:
     needs: check_trading_day
-    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '0 8 * * 5'
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'manual_push_pool') || 
+        (github.event.schedule == '0 8 * * 5' && needs.check_trading_day.outputs.is_trading_day == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: 拉取代码
@@ -80,7 +102,8 @@ jobs:
 
   push_stock_pool:
     needs: [check_trading_day, update_stock_pool]
-    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '0 3 * * 1-5'
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'manual_push_pool') || 
+        (github.event.schedule == '0 3 * * 1-5' && needs.check_trading_day.outputs.is_trading_day == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: 拉取代码
@@ -101,7 +124,8 @@ jobs:
 
   execute_strategy:
     needs: check_trading_day
-    if: needs.check_trading_day.outputs.is_trading_day == 'true' && github.event.schedule == '30 5 * * 1-5'
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'force_execute') || 
+        (github.event.schedule == '30 5 * * 1-5' && needs.check_trading_day.outputs.is_trading_day == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: 拉取代码
@@ -123,7 +147,8 @@ jobs:
 
   check_arbitrage:
     needs: check_trading_day
-    if: needs.check_trading_day.outputs.is_trading_day == 'true' && contains(github.event.schedule, '30 1') || contains(github.event.schedule, '0 2') || contains(github.event.schedule, '30 2') || contains(github.event.schedule, '0 3') || contains(github.event.schedule, '30 3') || contains(github.event.schedule, '0 5') || contains(github.event.schedule, '0 6') || contains(github.event.schedule, '30 6') || contains(github.event.schedule, '0 7')
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'check_arbitrage') || 
+        (contains(github.event.schedule, '30 1') || contains(github.event.schedule, '0 2') || contains(github.event.schedule, '30 2') || contains(github.event.schedule, '0 3') || contains(github.event.schedule, '30 3') || contains(github.event.schedule, '0 5') || contains(github.event.schedule, '0 6') || contains(github.event.schedule, '30 6') || contains(github.event.schedule, '0 7')) && needs.check_trading_day.outputs.is_trading_day == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: 拉取代码
@@ -142,3 +167,67 @@ jobs:
           WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
           TUSHARE_API_KEY: ${{ secrets.TUSHARE_API_KEY }}
         run: python main.py --task check_arbitrage
+
+  test_push:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'test_push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 发送测试消息
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+        run: python main.py --task test_push
+
+  reset_position:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'reset_position'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 重置仓位
+        run: python main.py --task reset_position
+      
+      - name: 提交仓位重置结果
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Reset all positions (test)"
+          file_pattern: "data/transactions/*.json"
+
+  push_ipo_info:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.task == 'push_ipo_info'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+      
+      - name: 推送新股信息
+        env:
+          WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+        run: python main.py --task push_ipo_info
