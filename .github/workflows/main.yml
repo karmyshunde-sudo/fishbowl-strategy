@@ -27,12 +27,12 @@ on:
         required: true
         type: choice
         options:
-          - test_push
-          - manual_push_pool
-          - force_execute
-          - reset_position
-          - push_ipo_info
-          - check_arbitrage
+          - test_push             #【T01】手动推送微信消息
+          - manual_push_pool      #【T04】手动推送股票池
+          - force_execute         #【T05】执行策略并推送
+          - reset_position        #【T06】重置仓位
+          - push_ipo_info         #【T07】推送新股信息
+          - check_arbitrage       #【T09】套利扫描
 
 jobs:
   check_trading_day:
