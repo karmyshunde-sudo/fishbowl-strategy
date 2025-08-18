@@ -21,6 +21,18 @@ on:
     - cron: '30 6 * * 1-5'  # 14:30
     - cron: '0 7 * * 1-5'   # 15:00
   workflow_dispatch:  # 支持手动触发
+    inputs:
+      task:
+        description: '指定任务类型'
+        required: true
+        type: choice
+        options:
+          - test_push
+          - manual_push_pool
+          - force_execute
+          - reset_position
+          - push_ipo_info
+          - check_arbitrage
 
 jobs:
   check_trading_day:
