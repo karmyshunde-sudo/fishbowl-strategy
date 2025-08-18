@@ -1,10 +1,8 @@
-name: 新股申购信息推送
-
 on:
   schedule:
-    # 每个交易日早上10点10分执行（UTC时间2点10分，周一至周五）
-    - cron: '25 2 * * *'
-  workflow_dispatch:  # 支持手动触发
+    # 每个交易日早上10:55（北京时间）执行 → UTC 2:55，周一至周五
+    - cron: '55 2 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   check_trading_day:
@@ -12,25 +10,37 @@ jobs:
     outputs:
       is_trading_day: ${{ steps.check.outputs.is_trading_day }}
     steps:
-      - name: 检查是否为交易日
+      - name: 检查是否为交易日（北京时间）
         id: check
         run: |
-          # 判断今天是否为周一至周五
-          weekday=$(date +%u)
-          if [ $weekday -ge 1 ] && [ $weekday -le 5 ]; then
-            echo "is_trading_day=true" >> $GITHUB_OUTPUT
-          else
+          today=$(date -d "UTC+8" +%Y-%m-%d)
+          weekday=$(date -d "UTC+8" +%u)
+          echo "当前北京时间: $today (周$weekday)"
+          
+          # 排除周末
+          if [ $weekday -ge 6 ]; then
             echo "is_trading_day=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # 排除节假日
+          holidays=("2025-01-01" "2025-04-04" "2025-05-01" "2025-10-01")
+          if [[ " ${holidays[@]} " =~ " $today " ]]; then
+            echo "is_trading_day=false" >> $GITHUB_OUTPUT
+          else
+            echo "is_trading_day=true" >> $GITHUB_OUTPUT
           fi
 
   fetch_and_push_ipo:
     needs: check_trading_day
     if: needs.check_trading_day.outputs.is_trading_day == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # 显式声明拉取代码权限
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
-      
+            
       - name: 设置Python环境
         uses: actions/setup-python@v5
         with:
