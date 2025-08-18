@@ -101,7 +101,7 @@ def main():
             # 等待消息发送完成
             while not (notifier.message_queue.empty() and notifier.retry_queue.empty()):
                 time.sleep(10)
-            notifier.终止()
+            notifier.stop()
             logger.info("股票池推送任务完成")
 
         elif args.task == 'execute_strategy':
@@ -121,7 +121,7 @@ def main():
             # 等待消息发送完成
             while not (notifier.message_queue.empty() and notifier.retry_queue.empty()):
                 time.sleep(10)
-            notifier.终止()
+            notifier.stop()
             logger.info("策略执行任务完成")
 
         elif args.task == 'check_arbitrage':
@@ -153,7 +153,7 @@ def main():
             # 等待消息发送完成
             while not (notifier.message_queue.empty() and notifier.retry_queue.empty()):
                 time.sleep(10)
-            notifier.终止()
+            notifier.stop()
             logger.info("套利检查任务完成")
 
         # 测试功能
@@ -169,7 +169,7 @@ def main():
             
             # 等待消息发送
             time.sleep(60)
-            notifier.终止()
+            notifier.stop()
             logger.info("测试消息推送完成")
 
         elif args.task == 'test_strategy':
@@ -200,8 +200,8 @@ def main():
         elif args.task == 'reset_position':
             # 重置持仓（测试用）
             strategy.current_positions = {
-                'stable': {'etf_code': '', 'position': 0, 'avg_price': 0, '终止_loss': 0},
-                'aggressive': {'etf_code': '', 'position': 0, 'avg_price': 0, '终止_loss': 0}
+                'stable': {'etf_code': '', 'position': 0, 'avg_price': 0, 'stop_loss': 0},
+                'aggressive': {'etf_code': '', 'position': 0, 'avg_price': 0, 'stop_loss': 0}
             }
             logger.info("持仓已重置")
 
@@ -213,8 +213,23 @@ def main():
     finally:
         # 确保通知器停止
         if 'notifier' in locals() and notifier.running:
-            notifier.终止()
+            notifier.stop()
 
 if __name__ == "__main__":
     import time
     main()
+elif args.task == 'push_ipo_info':
+            # 推送新股申购信息
+            from ipo_scraper import IPOInfoScraper
+            scraper = IPOInfoScraper()
+            messages = scraper.run()
+            if messages:
+                notifier.start()
+                for msg in messages:
+                    notifier.add_message({'content': msg})
+                while not (notifier.message_queue.empty() and notifier.retry_queue.empty()):
+                    time.sleep(10)
+                notifier.stop()
+                logger.info(f"成功推送{len(messages)}条新股申购信息")
+            else:
+                logger.info("没有需要推送的新股申购信息")
