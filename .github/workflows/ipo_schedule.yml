@@ -2,9 +2,9 @@ name: 新股申购信息推送
 
 on:
   schedule:
-    # 每个交易日早上10:55（北京时间）执行 → UTC 2:55，周一至周五
-    - cron: '55 2 * * 1-5'
-  workflow_dispatch:
+    # 每个交易日早上11:25（北京时间）执行（UTC 3:25，周一至周五）
+    - cron: '25 3 * * 1-5'
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   check_trading_day:
@@ -15,34 +15,50 @@ jobs:
       - name: 检查是否为交易日（北京时间）
         id: check
         run: |
+          # 转换为北京时间（UTC+8）
           today=$(date -d "UTC+8" +%Y-%m-%d)
-          weekday=$(date -d "UTC+8" +%u)
+          weekday=$(date -d "UTC+8" +%u)  # 1=周一, 5=周五, 6=周六, 7=周日
           echo "当前北京时间: $today (周$weekday)"
           
-          # 排除周末
+          # 判断是否为周末
           if [ $weekday -ge 6 ]; then
             echo "is_trading_day=false" >> $GITHUB_OUTPUT
+            echo "今天是周末，非交易日"
             exit 0
           fi
           
-          # 排除节假日
-          holidays=("2025-01-01" "2025-04-04" "2025-05-01" "2025-10-01")
+          # 节假日列表（格式：YYYY-MM-DD）
+          holidays=(
+            "2025-01-01" "2025-01-02" "2025-01-03"  # 元旦
+            "2025-04-04" "2025-04-05"              # 清明
+            "2025-05-01" "2025-05-02" "2025-05-03"  # 劳动节
+            "2025-10-01" "2025-10-02" "2025-10-03" "2025-10-04" "2025-10-05"  # 国庆
+          )
+          
+          # 打印节假日列表用于调试
+          echo "节假日列表: ${holidays[*]}"
+          
+          # 检查当前日期是否为节假日
           if [[ " ${holidays[@]} " =~ " $today " ]]; then
             echo "is_trading_day=false" >> $GITHUB_OUTPUT
+            echo "今天是节假日，非交易日"
           else
             echo "is_trading_day=true" >> $GITHUB_OUTPUT
+            echo "今天是交易日"
           fi
+          
+          # 强制输出判断结果（调试关键）
+          echo "::set-output name=is_trading_day::${{ steps.check.outputs.is_trading_day }}"
+          echo "最终判断结果: is_trading_day=${{ steps.check.outputs.is_trading_day }}"
 
   fetch_and_push_ipo:
     needs: check_trading_day
     if: needs.check_trading_day.outputs.is_trading_day == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read  # 显式声明拉取代码权限
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
-            
+      
       - name: 设置Python环境
         uses: actions/setup-python@v5
         with:
@@ -61,3 +77,13 @@ jobs:
         with:
           name: ipo-logs
           path: logs/
+
+# ====== 调试说明 ======
+# 1. 检查check_trading_day步骤日志，确认输出：
+#    - 当前北京时间: YYYY-MM-DD (周N)
+#    - 节假日列表: [...]
+#    - 最终判断结果: is_trading_day=true
+# 2. 若is_trading_day=true但fetch_and_push_ipo未执行，检查：
+#    - 工作流文件中if条件是否正确引用outputs
+#    - 仓库Settings → Actions → General → Workflow permissions是否为Read and write
+# =====================
