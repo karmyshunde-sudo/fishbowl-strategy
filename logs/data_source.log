@@ -1,0 +1,3 @@
+2025-08-17 23:30:23,841 - data_source - WARNING - Tushare获取基础数据失败，尝试备用数据源
+2025-08-17 23:30:23,999 - data_source - ERROR - 新浪财经数据获取失败: Expecting value: line 1 column 1 (char 0)
+2025-08-17 23:30:24,000 - data_source - ERROR - 所有数据源获取基础数据失败

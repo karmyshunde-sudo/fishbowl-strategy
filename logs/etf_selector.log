@@ -1,0 +1,7 @@
+2025-08-17 23:35:21,421 - data_source - WARNING - 东方财富返回数据结构不完整
+2025-08-17 23:35:21,585 - data_source - ERROR - 新浪财经数据获取失败: Expecting value: line 1 column 1 (char 0)
+2025-08-17 23:35:21,586 - data_source - WARNING - Tushare API密钥未配置，跳过Tushare数据源
+2025-08-17 23:35:21,586 - data_source - WARNING - 所有数据源均失败，生成模拟数据用于测试
+2025-08-17 23:35:21,629 - data_source - INFO - ETF基础数据保存至data/basic/etf_basic_202508.csv，共5条记录
+2025-08-17 23:35:21,636 - etf_selector - INFO - 稳健仓筛选完成，共0只ETF
+2025-08-17 23:35:21,641 - etf_selector - INFO - 激进仓筛选完成，共0只ETF

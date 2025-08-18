@@ -1,0 +1,60 @@
+2025-08-17 23:41:11,982 - data_source - WARNING - 东方财富返回数据结构不完整
+2025-08-17 23:41:12,156 - data_source - ERROR - 新浪财经数据获取失败: Expecting value: line 1 column 1 (char 0)
+2025-08-17 23:41:12,157 - data_source - WARNING - Tushare API密钥未配置，跳过Tushare数据源
+2025-08-17 23:41:12,157 - data_source - WARNING - 所有数据源均失败，生成模拟数据用于测试
+2025-08-17 23:41:12,189 - data_source - INFO - ETF基础数据保存至data/basic/etf_basic_202508.csv，共5条记录
+2025-08-17 23:41:12,190 - etf_selector - INFO - 稳健仓筛选前数据统计: 共5只ETF
+2025-08-17 23:41:12,191 - etf_selector - INFO - 规模≥50.0亿: 5只
+2025-08-17 23:41:12,192 - etf_selector - INFO - 成交额≥2.0亿: 5只
+2025-08-17 23:41:12,195 - etf_selector - INFO - 跟踪误差≤1.0%: 0只
+2025-08-17 23:41:12,202 - etf_selector - WARNING - 应用所有筛选条件后无符合条件的稳健仓ETF，放宽跟踪误差条件
+2025-08-17 23:41:12,208 - etf_selector - INFO - 稳健仓筛选完成，共0只ETF
+2025-08-17 23:41:12,208 - etf_selector - INFO - 激进仓筛选前数据统计: 共5只ETF
+2025-08-17 23:41:12,214 - etf_selector - INFO - 规模≥5.0亿: 5只
+2025-08-17 23:41:12,217 - etf_selector - INFO - 成交额≥1.0亿: 5只
+2025-08-17 23:41:12,220 - etf_selector - INFO - 跟踪误差≤2.0%: 0只
+2025-08-17 23:41:12,225 - etf_selector - INFO - 激进仓筛选完成，共0只ETF
+2025-08-17 23:41:12,225 - etf_selector - WARNING - 稳健仓筛选结果为空，使用默认宽基ETF
+2025-08-17 23:41:12,233 - etf_selector - WARNING - 激进仓筛选结果为空，使用默认行业ETF
+2025-08-17 23:41:12,258 - etf_selector - INFO - 股票池已保存至data/stock_pool/stock_pool_20250815.json，稳健仓5只，激进仓5只
+2025-08-17 23:41:12,264 - fishbowl_strategy - INFO - 无历史交易记录，初始化空记录
+2025-08-17 23:41:14,945 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:14,945 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:14,945 - data_source - ERROR - 所有数据源获取510300行情数据失败
+2025-08-17 23:41:14,951 - fishbowl_strategy - WARNING - 510300无行情数据，跳过
+2025-08-17 23:41:16,312 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:16,312 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:16,312 - data_source - ERROR - 所有数据源获取510500行情数据失败
+2025-08-17 23:41:16,318 - fishbowl_strategy - WARNING - 510500无行情数据，跳过
+2025-08-17 23:41:19,564 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:19,565 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:19,565 - data_source - ERROR - 所有数据源获取588000行情数据失败
+2025-08-17 23:41:19,571 - fishbowl_strategy - WARNING - 588000无行情数据，跳过
+2025-08-17 23:41:21,186 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:21,186 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:21,187 - data_source - ERROR - 所有数据源获取159813行情数据失败
+2025-08-17 23:41:21,188 - fishbowl_strategy - WARNING - 159813无行情数据，跳过
+2025-08-17 23:41:22,150 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:22,150 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:22,151 - data_source - ERROR - 所有数据源获取512660行情数据失败
+2025-08-17 23:41:22,152 - fishbowl_strategy - WARNING - 512660无行情数据，跳过
+2025-08-17 23:41:23,104 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:23,104 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:23,104 - data_source - ERROR - 所有数据源获取159813行情数据失败
+2025-08-17 23:41:23,105 - fishbowl_strategy - WARNING - 159813无行情数据，跳过
+2025-08-17 23:41:25,280 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:25,280 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:25,281 - data_source - ERROR - 所有数据源获取512660行情数据失败
+2025-08-17 23:41:25,281 - fishbowl_strategy - WARNING - 512660无行情数据，跳过
+2025-08-17 23:41:27,101 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:27,101 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:27,101 - data_source - ERROR - 所有数据源获取510300行情数据失败
+2025-08-17 23:41:27,104 - fishbowl_strategy - WARNING - 510300无行情数据，跳过
+2025-08-17 23:41:28,088 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:28,088 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:28,089 - data_source - ERROR - 所有数据源获取588000行情数据失败
+2025-08-17 23:41:28,091 - fishbowl_strategy - WARNING - 588000无行情数据，跳过
+2025-08-17 23:41:29,733 - data_source - ERROR - 雅虎财经请求失败，状态码: 429
+2025-08-17 23:41:29,734 - data_source - WARNING - 雅虎财经获取行情数据失败，尝试其他数据源
+2025-08-17 23:41:29,735 - data_source - ERROR - 所有数据源获取510500行情数据失败
+2025-08-17 23:41:29,736 - fishbowl_strategy - WARNING - 510500无行情数据，跳过
