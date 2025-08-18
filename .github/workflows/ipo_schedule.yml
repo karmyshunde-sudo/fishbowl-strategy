@@ -2,8 +2,8 @@ name: 新股申购信息推送
 
 on:
   schedule:
-    # 每个交易日早上11:25（北京时间）执行（UTC 3:25，周一至周五）
-    - cron: '25 3 * * 1-5'
+    # 每个交易日早上10:25（北京时间）执行（UTC 2:25，周一至周五）
+    - cron: '25 2 * * 1-5'
   workflow_dispatch:  # 支持手动触发
 
 jobs:
@@ -15,10 +15,13 @@ jobs:
       - name: 检查是否为交易日（北京时间）
         id: check
         run: |
-          # 转换为北京时间（UTC+8）
-          today=$(date -d "UTC+8" +%Y-%m-%d)
-          weekday=$(date -d "UTC+8" +%u)  # 1=周一, 5=周五, 6=周六, 7=周日
-          echo "当前北京时间: $today (周$weekday)"
+          # 强制设置时区为北京时间（关键修复）
+          export TZ="Asia/Shanghai"
+          today=$(date +%Y-%m-%d)
+          weekday=$(date +%u)  # 1=周一, 5=周五, 6=周六, 7=周日
+          precise_time=$(date "+%Y-%m-%d %H:%M:%S")
+          
+          echo "当前北京精确时间：$precise_time（周$weekday）"
           
           # 判断是否为周末
           if [ $weekday -ge 6 ]; then
@@ -47,8 +50,7 @@ jobs:
             echo "今天是交易日"
           fi
           
-          # 强制输出判断结果（调试关键）
-          echo "::set-output name=is_trading_day::${{ steps.check.outputs.is_trading_day }}"
+          # 强制输出判断结果
           echo "最终判断结果: is_trading_day=${{ steps.check.outputs.is_trading_day }}"
 
   fetch_and_push_ipo:
@@ -77,13 +79,3 @@ jobs:
         with:
           name: ipo-logs
           path: logs/
-
-# ====== 调试说明 ======
-# 1. 检查check_trading_day步骤日志，确认输出：
-#    - 当前北京时间: YYYY-MM-DD (周N)
-#    - 节假日列表: [...]
-#    - 最终判断结果: is_trading_day=true
-# 2. 若is_trading_day=true但fetch_and_push_ipo未执行，检查：
-#    - 工作流文件中if条件是否正确引用outputs
-#    - 仓库Settings → Actions → General → Workflow permissions是否为Read and write
-# =====================
