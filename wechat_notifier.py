@@ -177,7 +177,7 @@ class WechatNotifier:
         """
         # 系统时间前缀
         system_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        prefix = f"CF系统时间：{system_time}\n"
+        prefix = f"【GIT-fishbowl-strategy-wechat_notifier】\n \n CF系统时间：{system_time}\n"
         
         # 策略类型名称
         pool_name = "稳健仓" if pool_type == 'stable' else "激进仓"
